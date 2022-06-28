@@ -166,6 +166,9 @@ router.get('/:id', async (req, res) => {
       path: 'pictures',
       populate: {
         path: 'comments',
+        populate: {
+          path: 'user',
+        },
       },
     })
     res.json(foundUser)

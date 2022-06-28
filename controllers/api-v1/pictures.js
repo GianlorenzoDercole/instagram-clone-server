@@ -8,6 +8,9 @@ router.get('/:id', async (req, res) => {
   try {
     const foundPicture = await db.Picture.findById(id).populate({
       path: 'comments',
+      populate: {
+        path: 'user',
+      },
     })
 
     res.json(foundPicture)
@@ -59,6 +62,8 @@ router.post('/:id/:userId/comment', async (req, res) => {
     })
     const newComment = await db.Comment.create(req.body)
     const foundUser = await db.User.findById(userId)
+    // console.log(userId)
+    // console.log(foundUser)
 
     newComment.user = foundUser
     foundPicture.comments.push(newComment)
