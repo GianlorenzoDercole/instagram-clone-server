@@ -9,7 +9,6 @@ const path = require('path')
 const { unlinkSync } = require('fs')
 // config multer -- tell it about the static folder
 const uploads = multer({ dest: 'uploads/' })
-
 // POST /users/register -- CREATE a new user
 router.post('/register', async (req, res) => {
   try {
@@ -17,27 +16,22 @@ router.post('/register', async (req, res) => {
     const findUser = await db.User.findOne({
       email: req.body.email,
     })
-
     // disallow users from resgistering twice
     if (findUser) {
       // stop the route and send a response saying the user exists
       return res.status(400).json({ msg: 'email already exists' })
     }
-
     // hash the user's pass
     const password = req.body.password
     const salts = 12
     const hashedPassword = await bcrypt.hash(password, salts)
-
     // create a new user with hassed password
     const newUser = new db.User({
       name: req.body.name,
       email: req.body.email,
       password: hashedPassword,
     })
-
     await newUser.save()
-
     // sign the user in by sending a valid jwt back
     // create the jwt payload
     const payload = {
@@ -61,7 +55,6 @@ router.post('/register', async (req, res) => {
     }
   }
 })
-
 // POST /users/login -- validate login creds
 router.post('/login', async (req, res) => {
   try {
@@ -74,7 +67,6 @@ router.post('/login', async (req, res) => {
     if (!foundUser) {
       return res.status(400).json({ msg: 'No user exists with that email' })
     }
-
     // check the supplied password aagainst the password in the database
     // if they do not match, return and let the user know that the login has failed
     const passwordCheck = await bcrypt.compare(
@@ -84,7 +76,6 @@ router.post('/login', async (req, res) => {
     if (!passwordCheck) {
       return res.status(400).json({ msg: 'password and email doesnt match' })
     }
-
     // create a jwt payload
     const payload = {
       name: foundUser.name,
@@ -107,14 +98,12 @@ router.post('/login', async (req, res) => {
     }
   }
 })
-
 // GET /auth-locked -- checks user creds and only send back privleged
 // info if the user is logged in properly
 router.get('/auth-locked', authLockedRoute, (req, res) => {
   console.table(res.locals.user)
   res.json({ msg: 'welcome to the secret auth-locked route' })
 })
-
 // PUT edit user account details // tested in postman
 router.put('/:id', async (req, res) => {
   const id = req.params.id
@@ -122,7 +111,6 @@ router.put('/:id', async (req, res) => {
     const foundUser = await db.User.findByIdAndUpdate(id, req.body, {
       new: true,
     })
-
     res.status(201).json(foundUser)
   } catch (err) {
     console.warn(err)
@@ -131,19 +119,16 @@ router.put('/:id', async (req, res) => {
       .json({ msg: 'Something went wrong with updating your account details' })
   }
 })
-
 // DELETE profile // tested on postman
 router.delete('/:id', async (req, res) => {
   const id = req.params.id
   try {
     await db.User.findByIdAndDelete(id)
-
     res.status(204)
   } catch (err) {
     console.warn(err)
   }
 })
-
 // POST upload data, adds a new picture to user
 router.post('/:id/pictures', uploads.single('image'), async (req, res) => {
   try {
@@ -156,27 +141,23 @@ router.post('/:id/pictures', uploads.single('image'), async (req, res) => {
     unlinkSync(req.file.path)
     // save url to db
     // console.log(req.body)
-
     res.json({ cloudImage })
   } catch (err) {
     console.warn(err)
     res.status.json(503).json({ msg: 'you should look at the server console.' })
   }
 })
-
 // GET all users with pictures populating // tested on postman
 router.get('/', async (req, res) => {
   try {
     const allUsers = await db.User.find({}).populate({
       path: 'pictures',
     })
-
     res.json(allUsers)
   } catch (err) {
     console.warn(err)
   }
 })
-
 // GET a specific user with pictures populating // tested in postman
 router.get('/:id', async (req, res) => {
   const id = req.params.id
@@ -184,11 +165,9 @@ router.get('/:id', async (req, res) => {
     const foundUser = await db.User.findById(id).populate({
       path: 'pictures',
     })
-
     res.json(foundUser)
   } catch (err) {
     console.warn(err)
   }
 })
-
 module.exports = router
