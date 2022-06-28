@@ -50,14 +50,17 @@ router.delete('/:id', async (req, res) => {
 })
 
 // POST add a new comment to a picture // tested with postman
-router.post('/:id/comment', async (req, res) => {
+router.post('/:id/:userId/comment', async (req, res) => {
   const id = req.params.id
+  const userId = req.params.userId
   try {
     const foundPicture = await db.Picture.findById(id).populate({
       path: 'comments',
     })
     const newComment = await db.Comment.create(req.body)
+    const foundUser = await db.User.findById(userId)
 
+    newComment.user = foundUser
     foundPicture.comments.push(newComment)
     newComment.picture = foundPicture
 

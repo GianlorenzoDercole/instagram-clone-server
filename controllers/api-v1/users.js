@@ -164,6 +164,9 @@ router.get('/:id', async (req, res) => {
   try {
     const foundUser = await db.User.findById(id).populate({
       path: 'pictures',
+      populate: {
+        path: 'comments',
+      },
     })
     res.json(foundUser)
   } catch (err) {
