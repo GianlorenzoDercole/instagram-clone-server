@@ -3,14 +3,12 @@ const db = require('../../models')
 
 // PUT edit a comment /api-v1/comments/
 router.put('/:id', async (req, res) => {
-  const commentId = req.params.id
+  const id = req.params.id
 
   try {
-    const foundComment = await db.Comment.findByIdAndUpdate(
-      { id: commentId },
-      req.body,
-      { new: true }
-    ).populate({ path: 'picture' })
+    const foundComment = await db.Comment.findByIdAndUpdate(id, req.body, {
+      new: true,
+    }).populate({ path: 'picture' })
 
     res.status(201).json(foundComment)
   } catch (err) {

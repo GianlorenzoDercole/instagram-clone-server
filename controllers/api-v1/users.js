@@ -101,7 +101,7 @@ router.post('/login', async (req, res) => {
 // GET /auth-locked -- checks user creds and only send back privleged
 // info if the user is logged in properly
 router.get('/auth-locked', authLockedRoute, (req, res) => {
-  console.table(res.locals.user)
+  // console.table(res.locals.user)
   res.json({ msg: 'welcome to the secret auth-locked route' })
 })
 // PUT edit user account details // tested in postman
