@@ -1,5 +1,4 @@
 node_modules
 .env
-testDb.js
 hashTest.js
 jwtTest.js
